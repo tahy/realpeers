@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+
+  anchor:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+
+  client:
+    build: .
+    command: python client.py
+    volumes:
+      - .:/code
