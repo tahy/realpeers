@@ -2,13 +2,41 @@ version: "3.9"
 
 services:
 
-  anchor:
+  anchor1:
     build: .
     command: python anchor.py
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
+    environment:
+      - ANCHOR_ID=1
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  anchor2:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    environment:
+      - ANCHOR_ID=2
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  anchor3:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    environment:
+      - ANCHOR_ID=3
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  anchor4:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    environment:
+      - ANCHOR_ID=4
+      - ANCHOR_SOURCE_FILE_PATH=source.log
 
   client:
     build: .
