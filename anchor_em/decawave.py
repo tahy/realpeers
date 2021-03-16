@@ -169,23 +169,6 @@ class RequestConfFrame(metaclass=Frame):
     version = b"", 1            # version
 
 
-class AnchorConfigurationFrame(metaclass=Frame):
-    fn_ce = 0x44, 1          # Function code
-    a_n = b"", 1             # Not used (obsolete).
-    m = b"", 1               # RTLS Role
-    cp = b"", 1              # UWB Channel Number (Lower Nibble)
-    dr = b"", 1              # Data Rate
-    pc = b"", 1              # Preamble Code: 1-15
-    pl = b"", 1              # Preamble Len
-    psn = b"", 1             # PAC Size (Preamble Acquisition Chunk)
-    adrx = b"", 2            # 16 bit anchor’s RX antenna delay
-    adtx = b"", 2            # 16 bit anchor’s TX antenna delay
-    reserved = 0, 1          # 0 (must be set to 0)
-    ld = 0, 1                # 0, 1 - disable, enable sending of diagnostic information
-    primary_master = b"", 8  #
-    lag = b"", 4             # Secondary Master’s CCP frame Tx delay
-
-
 class CommunicationTestStartRequestFrame(metaclass=Frame):
     fn_ce = 0x32, 1                # Function code
     tax_rx = 0, 1                  # 1 – Transmitter, 0 – Receiver
@@ -206,45 +189,35 @@ class CommunicationTestResultFrame(metaclass=Frame):
     rx_others = b"", 2            # 2 bytes - Number of Other Frames Received.
 
 
-# class ExtendedRangeMeasurementRequestFrame(metaclass=Frame):
-#     fn_ce = 0x55, 1                        # Function code
-#     l =
-#     ir
-#     r_n
-#     ad
-#     txd
-#     rxd
-#     respd
-#     find
-#     repd
-#     rollper
-#     iadd
-#     radd
-#     ln
-#     tx_power
+# class AnchorConfigurationFrame(metaclass=Frame):
+#     fn_ce = 0x44, 1          # Function code
+#     a_n = b"", 1             # Not used (obsolete).
+#     m = b"", 1               # RTLS Role
+#     cp = b"", 1              # UWB Channel Number (Lower Nibble)
+#     dr = b"", 1              # Data Rate
+#     pc = b"", 1              # Preamble Code: 1-15
+#     pl = b"", 1              # Preamble Len
+#     psn = b"", 1             # PAC Size (Preamble Acquisition Chunk)
+#     adrx = b"", 2            # 16 bit anchor’s RX antenna delay
+#     adtx = b"", 2            # 16 bit anchor’s TX antenna delay
+#     reserved = 0, 1          # 0 (must be set to 0)
+#     ld = 0, 1                # 0, 1 - disable, enable sending of diagnostic information
+#     primary_master = b"", 8  #
+#     lag = b"", 4             # Secondary Master’s CCP frame Tx delay
 
 
-class DecawaveRequest:
-    def __init__(self, bin_frame):
-        print(bin_frame)
-        print(bin_frame[0])
-        self.bin_frame = bin_frame
-
-        if bin_frame[0] == 200:  # 0xc8 CPPUWBFrame
-            self.frame = CPPUWBFrame(bin_frame)
-            self.report_class = CPPRXReportFrame
-
-        if bin_frame[0] == 0x44:  # 0xc8 AnchorConfigurationFrame
-            self.frame = AnchorConfigurationFrame(bin_frame)
-            self.report_class = CommunicationTestDoneIndicationFrame
-
-
-class DecawaveReport:
-    def __init__(self, request):
-        self.request = request
-        self.frame = self.request.report_class()
-        # find report in logs
-
-
-    def render_frame(self):
-        return self.frame.to_binary()
+class AnchorConfigurationFrame(metaclass=Frame):
+    chan = 3, 1
+    prf = 1, 1
+    txPreambLength = 24, 1
+    rxPAC = 3, 1
+    txCode = 8, 1
+    rxCode = 8, 1
+    nsSFD = 0, 1
+    dataRate = 2, 1
+    phrMode = 3, 1
+    sfdTO = 1058, 2
+    my_master_ID = 13758255198446766421, 16
+    role = 1, 1
+    master_period = 7777, 2
+    submaster_delay = 253, 1

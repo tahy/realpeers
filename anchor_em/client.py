@@ -19,7 +19,7 @@ async def main():
         frames = CPPUWBFrame(), AnchorConfigurationFrame()
 
         for frame in frames:
-            request = Message(code=GET, payload=frame.to_binary(), uri='coap://anchor/main')
+            request = Message(code=GET, payload=frame.to_binary(), uri='coap://anchor/anchor-config')
 
             try:
                 response = await protocol.request(request).response

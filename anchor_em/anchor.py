@@ -4,27 +4,7 @@ import logging
 import aiocoap.resource as resource
 import aiocoap
 
-from decawave import DecawaveRequest, DecawaveReport, CPPUWBFrame
-
-
-# frame = CPPUWBFrame(b"123456789012345678")
-# # print(frame.fields)
-# frame2 = CPPUWBFrame()
-# print(frame2.fields)
-# print(dir(frame))
-# print(frame.frame_ctrl)
-
-#
-# print(frame.to_binary())
-# print(frame2.to_binary())
-# print(frame2.frame_ctrl_raw)
-# print(frame2.frame_ctrl_hex)
-# print(frame2.frame_ctrl)
-# print(frame2.dest_addr)
-# print(frame2.fn_cd_hex)
-# print(frame2.src_addr_dec)
-# print(frame2.src_addr_hex)
-# print(frame2.src_addr)
+from report import ConfigGetReport, StateGetReport, PopQueueGetReport
 
 # logging setup
 logging.basicConfig(level=logging.DEBUG)
@@ -32,16 +12,57 @@ logging.getLogger("coap-server").setLevel(logging.DEBUG)
 
 
 class AnchorResource(resource.Resource):
+    get_report_class = None
+    put_report_class = None
+
+    def get_report_data(self):
+        raise NotImplementedError
+
+    def put_report_data(self):
+        raise NotImplementedError
+
+    async def render(self, request):
+        method = str(request.code).lower()
+        if method == "get":
+            if not self.get_report_class:
+                raise resource.error.UnallowedMethod()
+        if method == "put":
+            if not self.put_report_class:
+                raise resource.error.UnallowedMethod()
+        return await super().render(request)
 
     async def render_get(self, request):
-        decawave_request = DecawaveRequest(bin_frame=request.payload)
-        decawave_report = DecawaveReport(decawave_request)
-        return aiocoap.Message(payload=decawave_report.render_frame())
+        if self.get_report_class:
+            decawave_report = self.get_report_class()
+            return aiocoap.Message(payload=decawave_report.render_frame())
+        else:
+            raise Exception("Unknown coap method!")
+
+    async def render_put(self, request):
+        print('PUT payload: %s' % request.payload)
+        self.set_content(request.payload)
+        return aiocoap.Message(code=aiocoap.CHANGED, payload=self.content)
+
+
+class AnchorConfig(AnchorResource):
+    get_report_class = ConfigGetReport
+    put_report_class = ConfigPutReport
+
+
+class AnchorState(AnchorResource):
+    get_report_class = StateGetReport
+    put_report_class = StatePutReport
+
+
+class PopQueue(AnchorResource):
+    get_report_class = PopQueueGetReport
 
 
 def main():
     root = resource.Site()
-    root.add_resource(['main'], AnchorResource())
+    root.add_resource(['anchor-config'], AnchorConfig())
+    root.add_resource(['popqueue'], AnchorState())
+    root.add_resource(['anchor-state'], PopQueue())
     asyncio.Task(aiocoap.Context.create_server_context(root))
     asyncio.get_event_loop().run_forever()
 
