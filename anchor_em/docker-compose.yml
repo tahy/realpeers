@@ -2,44 +2,63 @@ version: "3.9"
 
 services:
 
-  anchor1:
-    build: .
-    command: python anchor.py
-    volumes:
-      - .:/code
-    environment:
-      - ANCHOR_ID=1
-      - ANCHOR_SOURCE_FILE_PATH=source.log
+#  anchor1:
+#    build: .
+#    command: python anchor.py
+#    volumes:
+#      - .:/code
+#    environment:
+#      - ANCHOR_ID=1
+#      - ANCHOR_SOURCE_FILE_PATH=source.log
+#
+#  anchor2:
+#    build: .
+#    command: python anchor.py
+#    volumes:
+#      - .:/code
+#    environment:
+#      - ANCHOR_ID=2
+#      - ANCHOR_SOURCE_FILE_PATH=source.log
+#
+#  anchor3:
+#    build: .
+#    command: python anchor.py
+#    volumes:
+#      - .:/code
+#    environment:
+#      - ANCHOR_ID=3
+#      - ANCHOR_SOURCE_FILE_PATH=source.log
+#
+#  anchor4:
+#    build: .
+#    command: python anchor.py
+#    volumes:
+#      - .:/code
+#    environment:
+#      - ANCHOR_ID=4
+#      - ANCHOR_SOURCE_FILE_PATH=source.log
+#
+#  client:
+#    build: .
+#    command: python client.py
+#    volumes:
+#      - .:/code
 
-  anchor2:
+  zeroregister:
     build: .
-    command: python anchor.py
+    command: python zero.py
+    networks:
+      - test
     volumes:
       - .:/code
-    environment:
-      - ANCHOR_ID=2
-      - ANCHOR_SOURCE_FILE_PATH=source.log
 
-  anchor3:
+  zero:
     build: .
-    command: python anchor.py
+    command: python zeroread.py
+    networks:
+      - test
     volumes:
       - .:/code
-    environment:
-      - ANCHOR_ID=3
-      - ANCHOR_SOURCE_FILE_PATH=source.log
 
-  anchor4:
-    build: .
-    command: python anchor.py
-    volumes:
-      - .:/code
-    environment:
-      - ANCHOR_ID=4
-      - ANCHOR_SOURCE_FILE_PATH=source.log
-
-  client:
-    build: .
-    command: python client.py
-    volumes:
-      - .:/code
+networks:
+  test:

@@ -1,5 +1,5 @@
 from config import config
-from decawave import Frame, AnchorConfigurationFrame, OkFrame, AnchorStateFrame, normalise_value
+from decawave import AnchorConfigurationFrame, OkFrame, AnchorStateFrame, normalise_value
 
 
 class Report:

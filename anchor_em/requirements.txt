@@ -1,1 +1,2 @@
 aiocoap[all]
+zeroconf

@@ -15,7 +15,7 @@ async def main():
     protocol = await Context.create_client_context()
 
     while True:
-        request = Message(code=GET, uri='coap://anchor/anchor-state')
+        request = Message(code=GET, uri='coap://anchor1/anchor-state')
         try:
             response = await protocol.request(request).response
         except Exception as e:
@@ -25,7 +25,7 @@ async def main():
             print('Result : %s\n%r' % (response.code, response.payload))
 
         request = Message(code=PUT, payload=AnchorStateFrame(bytes([1])).to_binary(),
-                          uri='coap://anchor/anchor-state')
+                          uri='coap://anchor1/anchor-state')
         try:
             response = await protocol.request(request).response
         except Exception as e:
@@ -34,7 +34,7 @@ async def main():
         else:
             print('Result: %s\n%r' % (response.code, response.payload))
 
-        request = Message(code=GET, uri='coap://anchor/anchor-config')
+        request = Message(code=GET, uri='coap://anchor1/anchor-config')
         try:
             response = await protocol.request(request).response
         except Exception as e:
@@ -44,7 +44,7 @@ async def main():
             print('Result: %s\n%r' % (response.code, response.payload))
 
         request = Message(code=PUT, payload=AnchorConfigurationFrame().to_binary(),
-                          uri='coap://anchor/anchor-config')
+                          uri='coap://anchor1/anchor-config')
         try:
             response = await protocol.request(request).response
         except Exception as e:
@@ -53,7 +53,7 @@ async def main():
         else:
             print('Result: %s\n%r' % (response.code, response.payload))
 
-        request = Message(code=GET, uri='coap://anchor/popqueue')
+        request = Message(code=GET, uri='coap://anchor1/popqueue')
         try:
             response = await protocol.request(request).response
         except Exception as e:
