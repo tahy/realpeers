@@ -1,5 +1,6 @@
 import os
 
+from db import objects as db_objects, DefaultConfigModel
 from decawave import AnchorConfigurationFrame, CPPRXFrame, CPPTXFrame, BlinkFrame
 
 ANCHOR_SOURCE_FILE_PATH = os.environ.get('ANCHOR_SOURCE_FILE_PATH', "source.log")
@@ -12,33 +13,35 @@ ANCHOR_STATE = (
     (ANCHOR_STATE_WORKING, "working"),
 )
 
+# get anchor default config from database
+with db_objects.allow_sync():
+    default_db_config = DefaultConfigModel.select()[DefaultConfigModel.select().count() - 1]
 
-default_anchor_configuration = AnchorConfigurationFrame()
-default_anchor_configuration.chan = 0
-default_anchor_configuration.prf = 1
-default_anchor_configuration.txPreambLength = 24
-default_anchor_configuration.rxPAC = 3
-default_anchor_configuration.txCode = 8
-default_anchor_configuration.rxCode = 8
-default_anchor_configuration.nsSFD = 0
-default_anchor_configuration.dataRate = 2
-default_anchor_configuration.phrMode = 3
-default_anchor_configuration.sfdTO = 1058
-default_anchor_configuration.my_master_ID = 66666655198446766421
-default_anchor_configuration.role = 1
-default_anchor_configuration.master_period = 7777
-default_anchor_configuration.submaster_delay = 253
+anchor_config = AnchorConfigurationFrame()
+anchor_config.chan = default_db_config.chan or 0
+anchor_config.prf = default_db_config.prf or 1
+anchor_config.txPreambLength = default_db_config.txPreambLength or 24
+anchor_config.rxPAC = default_db_config.rxPAC or 3
+anchor_config.txCode = default_db_config.txCode or 8
+anchor_config.rxCode = default_db_config.rxCode or 8
+anchor_config.nsSFD = default_db_config.nsSFD or 0
+anchor_config.dataRate = default_db_config.dataRate or 2
+anchor_config.phrMode = default_db_config.phrMode or 3
+anchor_config.sfdTO = default_db_config.sfdTO or 1058
+anchor_config.my_master_ID = default_db_config.my_master_ID or 66666655198446766421
+anchor_config.role = default_db_config.role or 1
+anchor_config.master_period = default_db_config.master_period or 7777
+anchor_config.submaster_delay = default_db_config.submaster_delay or 253
 
 
 class AnchorConfig:
-    def __init__(self):
+    def __init__(self, default_config):
         self.ID = os.environ.get('ANCHOR_ID', None)
         if not self.ID:
             raise SystemExit("Configure ANCHOR_ID!!!")
         self.state = ANCHOR_STATE_IDLE
-        self.anchor_config = default_anchor_configuration
+        self.anchor_config = default_config
         self.frame_queue = []
-
         self.load_data_from_file()
 
     def load_data_from_file(self):
@@ -71,8 +74,6 @@ class AnchorConfig:
                     frame.fp = int(values[10])
                     self.frame_queue.append(frame)
 
-        # print(len(self.message_queue))
-
     def set_state(self, state):
         self.state = state
 
@@ -87,4 +88,4 @@ class AnchorConfig:
             yield frame
 
 
-config = AnchorConfig()
+config = AnchorConfig(anchor_config)

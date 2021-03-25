@@ -1,2 +1,5 @@
 aiocoap[all]
 zeroconf
+peewee
+peewee-async
+aiopg

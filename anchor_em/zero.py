@@ -1,57 +1,33 @@
-
-""" Example of announcing a service (in this case, a fake HTTP server) """
-
-import logging
 import socket
-import sys
+
+from zeroconf import ServiceBrowser, Zeroconf
 from time import sleep
 
-from zeroconf import ServiceInfo, Zeroconf
+from db import objects as db_objects, AnchorModel
+ZERO_CLE_FREQUENCY = 1
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    print('Number of arguments:', len(sys.argv), 'arguments.')
-    print('Argument List:', str(sys.argv))
-    if len(sys.argv) > 1:
-        assert sys.argv[1:] == ['--debug']
-        logging.getLogger('zeroconf').setLevel(logging.DEBUG)
 
-    hostname = socket.gethostname()
+class ZeroListener:
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('google.com', 0))
-    hostip = s.getsockname()[0]
+    def remove_service(self, zeroconf_, type_, name):
+        print(zeroconf)
+        print(type)
+        print("Service %s removed" % (name,))
 
-    print("hostname = " + hostname)
-    print("ip = " + hostip)
+    def add_service(self, zeroconf_, type_, name):
+        info = zeroconf.get_service_info(type_, name)
+        host_ip = socket.inet_ntoa(info.addresses[0])
+        with db_objects.allow_sync():
+            anchors = AnchorModel.select().where(AnchorModel.ip_address == host_ip)
+            if not anchors:
+                AnchorModel.create(ip_address=host_ip)
+        print("Service %s added, service info: %s" % (name, info))
 
-    desc = {'name': hostname}
-    info = ServiceInfo("_dynamix._tcp.local.",
-                       hostname + " Test Web Site._dynamix._tcp.local.",
-                       socket.inet_aton(hostip), 80, 0, 0,
-                       desc, hostname + ".local.")
 
-    info = ServiceInfo(
-        "_http._tcp.local.",
-        "Paul's Test Web Site._http._tcp.local.",
-        addresses=[socket.inet_aton("127.0.0.1")],
-        port=80,
-        properties=desc,
-        server="ash-2.local.",
-    )
-
-    zeroconf = Zeroconf()
-    print("Registration of a service, press Ctrl-C to exit...")
-
-    try:
-        while True:
-            print("Registering " + hostname + "...")
-            zeroconf.register_service(info)
-            sleep(20)
-            print("Unregistering " + hostname + "...")
-            zeroconf.unregister_service(info)
-            sleep(20)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        zeroconf.close()
+zeroconf = Zeroconf()
+browser = ServiceBrowser(zeroconf, "_http._tcp.local.", ZeroListener())
+try:
+    while True:
+        sleep(ZERO_CLE_FREQUENCY)
+finally:
+    zeroconf.close()

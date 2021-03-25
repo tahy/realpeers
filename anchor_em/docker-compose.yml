@@ -2,63 +2,84 @@ version: "3.9"
 
 services:
 
-#  anchor1:
-#    build: .
-#    command: python anchor.py
-#    volumes:
-#      - .:/code
-#    environment:
-#      - ANCHOR_ID=1
-#      - ANCHOR_SOURCE_FILE_PATH=source.log
-#
-#  anchor2:
-#    build: .
-#    command: python anchor.py
-#    volumes:
-#      - .:/code
-#    environment:
-#      - ANCHOR_ID=2
-#      - ANCHOR_SOURCE_FILE_PATH=source.log
-#
-#  anchor3:
-#    build: .
-#    command: python anchor.py
-#    volumes:
-#      - .:/code
-#    environment:
-#      - ANCHOR_ID=3
-#      - ANCHOR_SOURCE_FILE_PATH=source.log
-#
-#  anchor4:
-#    build: .
-#    command: python anchor.py
-#    volumes:
-#      - .:/code
-#    environment:
-#      - ANCHOR_ID=4
-#      - ANCHOR_SOURCE_FILE_PATH=source.log
-#
-#  client:
-#    build: .
-#    command: python client.py
-#    volumes:
-#      - .:/code
-
-  zeroregister:
+  anchor1:
     build: .
-    command: python zero.py
-    networks:
-      - test
+    command: python anchor.py
     volumes:
       - .:/code
+    environment:
+      - ANCHOR_ID=1
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  anchor2:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    environment:
+      - ANCHOR_ID=2
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  anchor3:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    environment:
+      - ANCHOR_ID=3
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  anchor4:
+    build: .
+    command: python anchor.py
+    volumes:
+      - .:/code
+    environment:
+      - ANCHOR_ID=4
+      - ANCHOR_SOURCE_FILE_PATH=source.log
+
+  client:
+    build: .
+    command: python client.py
+    volumes:
+      - .:/code
+
+  db:
+    image: postgres
+    volumes:
+      - postgress:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  influxdb:
+    image: influxdb:latest
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
+    environment:
+      - INFLUXDB_DATA_ENGINE=tsm1
+      - INFLUXDB_REPORTING_DISABLED=false
+      - INFLUXDB_DB=testDB
+    volumes:
+      - influx:/var/lib/influxdb
 
   zero:
     build: .
-    command: python zeroread.py
-    networks:
-      - test
+    command: python zero.py
     volumes:
       - .:/code
 
-networks:
-  test:
+  cle:
+    build: .
+    command: python cle.py
+    volumes:
+      - .:/code
+
+volumes:
+  postgress:
+  influx:
