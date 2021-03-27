@@ -1,3 +1,5 @@
+import json
+
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -53,7 +55,7 @@ class FrameMeta(type):
     def __new__(mcs, classname, bases, attrs):
         fields = OrderedDict()
         for name, value in attrs.items():
-            if not name.startswith('__') and name not in ("from_binary", "to_binary"):
+            if not name.startswith('__') and name not in ("from_binary", "to_binary", "to_json"):
                 fields[name] = normalise_value(value[0], value[1]), value[1]
 
         for name in fields.keys():
@@ -117,6 +119,12 @@ class Frame(metaclass=FrameMeta):
         for val in self.fields.values():
             result += normalise_value(val[0], val[1])
         return result
+
+    def to_json(self):
+        result = {"frame_type": self.__class__.__name__}
+        for name in self.fields.keys():
+            result[name] = getattr(self, name + "_hex")
+        return json.dumps(result)
 
 
 class CPPRXFrame(Frame):

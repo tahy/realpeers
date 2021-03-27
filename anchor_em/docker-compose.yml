@@ -76,7 +76,7 @@ services:
 
   cle:
     build: .
-    command: python cle.py
+    command: python poller.py
     volumes:
       - .:/code
 

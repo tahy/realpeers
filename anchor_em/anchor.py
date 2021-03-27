@@ -21,7 +21,7 @@ def zeroconf_rigister_service():
     s.connect(('google.com', 0))
     hostip = s.getsockname()[0]
     # print("hostname = " + hostname)
-    # print("ip = " + hostip)
+    print("ip = " + hostip)
     desc = {'name': hostname}
 
     info = ServiceInfo(
@@ -30,7 +30,7 @@ def zeroconf_rigister_service():
         addresses=[socket.inet_aton(hostip)],
         port=5683,
         properties=desc,
-        server="ash-2.local.",
+        server="anchor%s.local." % config.ID,
     )
     zeroconf = Zeroconf()
     try:

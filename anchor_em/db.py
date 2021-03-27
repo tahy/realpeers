@@ -4,7 +4,7 @@ import json
 
 import peewee_async
 
-from peewee import Model, CharField, ForeignKeyField
+from peewee import Model, CharField, ForeignKeyField, BigIntegerField, BooleanField, IntegerField
 from playhouse.postgres_ext import *
 
 
@@ -24,24 +24,30 @@ class BaseModel(Model):
 
 
 class DefaultConfigModel(BaseModel):
-    chan = CharField()
-    prf = CharField()
-    txPreambLength = CharField()
-    rxPAC = CharField()
-    txCode = CharField()
-    rxCode = CharField()
-    nsSFD = CharField()
-    dataRate = CharField()
-    phrMode = CharField()
-    sfdTO = CharField()
-    my_master_ID = CharField()
-    role = CharField()
-    master_period = CharField()
-    submaster_delay = CharField()
+    name = CharField()
+    active = BooleanField(default=True)
+    chan = BigIntegerField()
+    prf = BigIntegerField()
+    txPreambLength = BigIntegerField()
+    rxPAC = BigIntegerField()
+    txCode = BigIntegerField()
+    rxCode = BigIntegerField()
+    nsSFD = BigIntegerField()
+    dataRate = BigIntegerField()
+    phrMode = BigIntegerField()
+    sfdTO = BigIntegerField()
+    my_master_ID = BigIntegerField()
+    role = BigIntegerField()
+    master_period = BigIntegerField()
+    submaster_delay = BigIntegerField()
+
+    class Meta:
+        order_by = ['-id']
 
 
 class AnchorModel(BaseModel):
     ip_address = CharField()
+    state = IntegerField(default=0)
     config = JSONField(null=True)
 
 
@@ -50,16 +56,24 @@ class AnchorReportModel(BaseModel):
     record = JSONField(null=True)
 
 
+class JobModel(BaseModel):
+    name = CharField()
+    anchor_ids = CharField(null=True)
+    parameters = JSONField(null=True)
+
+
 def create_tables():
     # sync code!
     DefaultConfigModel.create_table(True)
     AnchorModel.create_table(True)
     AnchorReportModel.create_table(True)
+    JobModel.create_table(True)
     database.close()
 
 
 def create_default_config():
     config = DefaultConfigModel(
+        name="DefaultConfig",
         chan=0,
         prf=1,
         txPreambLength=24,
@@ -70,7 +84,7 @@ def create_default_config():
         dataRate=2,
         phrMode=3,
         sfdTO=1058,
-        my_master_ID=66666655198446766421,
+        my_master_ID=66666655198446,
         role=1,
         master_period=7777,
         submaster_delay=253,
@@ -82,7 +96,7 @@ def create_default_config():
 objects = peewee_async.Manager(database)
 
 # db creation, sync code for proper order
-# create_tables()
+create_tables()
 # create_default_config()
 
 

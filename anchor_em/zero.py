@@ -11,12 +11,12 @@ class ZeroListener:
 
     def remove_service(self, zeroconf_, type_, name):
         print(zeroconf)
-        print(type)
         print("Service %s removed" % (name,))
 
     def add_service(self, zeroconf_, type_, name):
         info = zeroconf.get_service_info(type_, name)
         host_ip = socket.inet_ntoa(info.addresses[0])
+        print(host_ip)
         with db_objects.allow_sync():
             anchors = AnchorModel.select().where(AnchorModel.ip_address == host_ip)
             if not anchors:
