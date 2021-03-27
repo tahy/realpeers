@@ -80,6 +80,12 @@ services:
     volumes:
       - .:/code
 
+  admin:
+    build: ../admin
+    command: python app.py
+    volumes:
+      - ../admin:/code
+
 volumes:
   postgress:
   influx:
