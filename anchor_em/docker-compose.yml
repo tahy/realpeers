@@ -68,24 +68,47 @@ services:
     volumes:
       - influx:/var/lib/influxdb
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq-data/:/var/lib/rabbitmq/
+      - rabbitmq-log/:/var/log/rabbitmq
+
   zero:
     build: .
     command: python zero.py
     volumes:
       - .:/code
 
-  cle:
+  poller:
     build: .
     command: python poller.py
     volumes:
       - .:/code
 
-  admin:
-    build: ../admin
-    command: python app.py
+  tst:
+    build: .
+    command: python influxdb.py
     volumes:
-      - ../admin:/code
+      - .:/code
+
+  tst2:
+    build: .
+    command: python rabbit_recieve.py
+    volumes:
+      - .:/code
+
+#  admin:
+#    build: ../admin
+#    command: python app.py
+#    volumes:
+#      - ../admin:/code
 
 volumes:
   postgress:
   influx:
+  rabbitmq-data:
+  rabbitmq-log:

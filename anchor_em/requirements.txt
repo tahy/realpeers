@@ -1,5 +1,7 @@
-aiocoap[all]
-zeroconf
-peewee
-peewee-async
-aiopg
+aiocoap==0.4.1
+zeroconf==0.29.0
+peewee==3.14.4
+peewee-async==0.7.1
+aiopg==1.2.1
+influxdb_client==1.15.0
+pika==1.2.0

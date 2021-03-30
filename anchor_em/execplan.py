@@ -7,6 +7,9 @@ from client import set_config, set_state, popqueue
 from config import ANCHOR_STATE_IDLE, ANCHOR_STATE_CONFIGURED, ANCHOR_STATE_WORKING
 from db import objects as db_objects, AnchorModel, DefaultConfigModel, AnchorReportModel, JobModel
 from decawave import AnchorConfigurationFrame, AnchorStateFrame, CPPTXFrame, CPPRXFrame, BlinkFrame
+from rabbit import publish as rabbit_publish
+from solver import solve
+from influxdb import publish as influx_publish
 
 
 class Job:
@@ -57,7 +60,7 @@ class InitAnchors(Job):
             if anchor.state == ANCHOR_STATE_CONFIGURED:
                 self.plan.add_job(SetStateAnchorJob(anchor, ANCHOR_STATE_WORKING))
             if anchor.state == ANCHOR_STATE_WORKING:
-                self.plan.add_job(PopQueueJob(anchor, 5))
+                self.plan.add_job(PopQueueJob(anchor, 1))
 
 
 class AnchorJob(Job):
@@ -133,7 +136,20 @@ class PopQueueJob(RegularJob, AnchorJob):
 
         report = await db_objects.create(AnchorReportModel,
                                          anchor=self.anchor, record=frame.to_json())
-        print(report.record)
+
+        # include solver
+        solved_data = solve(frame)
+
+        data = json.loads(frame.to_json())
+        data["anchor_id"] = self.anchor.id
+        data["solver"] = solved_data
+
+        # publish to rabbitmq
+        rabbit_publish(json.dumps(data))
+        # publish to influxdb
+        influx_publish(data)
+
+        # print(data)
 
 
 # "{\"parameter\": \"value\"}"
