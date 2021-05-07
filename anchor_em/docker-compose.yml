@@ -53,7 +53,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5432:5432"
+      - "5435:5432"
 
   influxdb:
     image: influxdb:latest
@@ -78,10 +78,13 @@ services:
       - rabbitmq-log/:/var/log/rabbitmq
 
   zero:
-    build: .
-    command: python zero.py
+    build:
+      context: .
+      dockerfile: Dockerfile-avahi
+    command: python3.6 zero.py
     volumes:
       - .:/code
+#      - ./avahi-deamon.conf:/etc/avahi/avahi-deamon.conf
 
   poller:
     build: .
