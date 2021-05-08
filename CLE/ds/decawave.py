@@ -5,6 +5,9 @@ from copy import deepcopy
 
 
 def normalise_value(value, length):
+    """
+    нормализация значения по байтам
+    """
     if isinstance(value, int):
         value = value.to_bytes(length, byteorder='little', signed=False)
 
@@ -66,7 +69,9 @@ class FrameMeta(type):
 
 
 class Frame(metaclass=FrameMeta):
-
+    """
+    Базовый класс для фрейма
+    """
     def __init__(self, bin_frame=None):
         self.__dict__["fields"] = deepcopy(self.fields)
         if bin_frame:

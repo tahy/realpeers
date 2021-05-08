@@ -5,3 +5,6 @@ peewee-async==0.7.1
 aiopg==1.2.1
 influxdb_client==1.15.0
 pika==1.2.0
+pyyaml
+sqlalchemy
+asyncpg

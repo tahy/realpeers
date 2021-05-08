@@ -6,8 +6,9 @@ from time import sleep
 from db import objects as db_objects, AnchorModel
 ZERO_CLE_FREQUENCY = 1
 
-import logging
+
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
+
 
 class ZeroListener:
 

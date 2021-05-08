@@ -1,13 +1,16 @@
-import asyncio
-import aiocoap.resource as resource
+
 import aiocoap
+import aiocoap.resource as resource
+import asyncio
+import getopt
 import logging
 import socket
+import sys
 
 from zeroconf import ServiceInfo, Zeroconf
 
-from config import config
-from report import ConfigGetReport, StateGetReport, PopQueueGetReport, \
+from CLE.anchor.config import config
+from CLE.anchor.report import ConfigGetReport, StateGetReport, PopQueueGetReport, \
     ConfigPutReport, StatePutReport
 
 # logging setup
@@ -21,7 +24,7 @@ def zeroconf_rigister_service():
     s.connect(('google.com', 0))
     hostip = s.getsockname()[0]
     # print("hostname = " + hostname)
-    print("ip = " + hostip)
+    # print("ip = " + hostip)
     desc = {'name': hostname}
 
     info = ServiceInfo(
@@ -38,9 +41,6 @@ def zeroconf_rigister_service():
         zeroconf.register_service(info)
     except Exception as e:
         raise e
-    finally:
-        pass
-        # zeroconf.close()
 
 
 class AnchorResource(resource.Resource):
@@ -77,6 +77,26 @@ class PopQueueResource(AnchorResource):
 
 
 def main():
+    argument_list = sys.argv[1:]
+    options = "ha:s:"
+    long_options = ["help", "anchor_id=", "source_file="]
+
+    try:
+        arguments, values = getopt.getopt(argument_list, options, long_options)
+        for currentArgument, currentValue in arguments:
+            if currentArgument in ("-h", "--help"):
+                print("Diplaying Help надо потом дописать справку")
+            elif currentArgument in ("-a", "--anchor_id"):
+                print("Anchor Id: %s" % currentValue)
+                config.ID = currentValue
+            elif currentArgument in ("-s", "--source_file"):
+                print("Source file is \"%s\"" % currentValue)
+                config.source_file = currentValue
+                config.load_data_from_file()
+    except getopt.error as err:
+        print(str(err))
+
+    # sys.exit(0)
     # announcing zeroconf service
     zeroconf_rigister_service()
 

@@ -3,13 +3,13 @@ import json
 from collections import deque
 from importlib import import_module
 
-from client import set_config, set_state, popqueue
-from config import ANCHOR_STATE_IDLE, ANCHOR_STATE_CONFIGURED, ANCHOR_STATE_WORKING
-from db import objects as db_objects, AnchorModel, DefaultConfigModel, AnchorReportModel, JobModel
-from decawave import AnchorConfigurationFrame, AnchorStateFrame, CPPTXFrame, CPPRXFrame, BlinkFrame
-from rabbit import publish as rabbit_publish
-from solver import solve
-from influxdb import publish as influx_publish
+from CLE.config import ANCHOR_STATE_IDLE, ANCHOR_STATE_CONFIGURED, ANCHOR_STATE_WORKING
+from CLE.ds.coap_client import set_config, set_state, popqueue
+# from CLE.ds.sql import objects as db_objects, AnchorModel, DefaultConfigModel, AnchorReportModel, JobModel
+from CLE.ds.decawave import AnchorConfigurationFrame, AnchorStateFrame, CPPTXFrame, CPPRXFrame, BlinkFrame
+from CLE.ds.rabbit import publish as rabbit_publish
+from CLE.ds.solver import solve
+# from CLE.ds.influxdb import publish as influx_publish
 
 
 class Job:
@@ -149,8 +149,6 @@ class PopQueueJob(RegularJob, AnchorJob):
         # publish to influxdb
         influx_publish(data)
 
-        # print(data)
-
 
 # "{\"parameter\": \"value\"}"
 class EmptyJob(Job):
@@ -222,5 +220,5 @@ class ExecutionPlan:
 
 
 execution_plan = ExecutionPlan()
-execution_plan.add_job(InitAnchors())
-execution_plan.add_job(RemoteJob(3))
+# execution_plan.add_job(InitAnchors())
+# execution_plan.add_job(RemoteJob(3))

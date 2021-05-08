@@ -1,0 +1,19 @@
+sqldb:
+  HOST: localhost
+  PORT: 5432
+  DB: postgres
+  USER: postgres
+  PASSWORD: postgres
+
+influxdb:
+  HOST: localhost
+  PORT: localhost
+  TOKEN: postgres
+  ORG: postgres
+  BUCKET: postgres
+
+rabbitmq:
+  HOST: postgres
+
+zero:
+  TYPE: "_ortho._udp.local."

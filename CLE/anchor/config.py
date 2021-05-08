@@ -1,16 +1,10 @@
 import os
 
-from decawave import AnchorConfigurationFrame, CPPRXFrame, CPPTXFrame, BlinkFrame
+from CLE.config import ANCHOR_STATE_IDLE
+from CLE.ds.decawave import AnchorConfigurationFrame, CPPRXFrame, CPPTXFrame, BlinkFrame
 
-ANCHOR_SOURCE_FILE_PATH = os.environ.get('ANCHOR_SOURCE_FILE_PATH', "source.log")
-ANCHOR_STATE_IDLE = 0
-ANCHOR_STATE_CONFIGURED = 1
-ANCHOR_STATE_WORKING = 2
-ANCHOR_STATE = (
-    (ANCHOR_STATE_IDLE, "idle"),
-    (ANCHOR_STATE_CONFIGURED, "configured"),
-    (ANCHOR_STATE_WORKING, "working"),
-)
+ANCHOR_SOURCE_FILE_PATH = os.environ.get('CLE_ANCHOR_SOURCE_FILE', "source.log")
+
 
 anchor_config = AnchorConfigurationFrame()
 anchor_config.chan = 0
@@ -31,15 +25,19 @@ anchor_config.submaster_delay = 253
 
 class AnchorConfig:
     def __init__(self, default_config):
-        self.ID = os.environ.get('ANCHOR_ID', None)
+        self.ID = os.environ.get('CLE_ANCHOR_ID', None)
         self.state = ANCHOR_STATE_IDLE
+        self.source_file = ANCHOR_SOURCE_FILE_PATH
         self.anchor_config = default_config
         self.frame_queue = []
         if self.ID:
             self.load_data_from_file()
 
     def load_data_from_file(self):
-        f = open(ANCHOR_SOURCE_FILE_PATH, "r")
+        """
+        Загрузка данных из файла логов в очередь сообщений
+        """
+        f = open(self.source_file, "r")
         for line in f.readlines():
             # print(line)
             if "CS_TX" in line:
